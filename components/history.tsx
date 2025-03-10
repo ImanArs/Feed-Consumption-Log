@@ -1,83 +1,90 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Egg, Package, Calendar, Edit2 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Egg, Package, Calendar, Edit2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface MonthData {
-  id: string
-  month: string
-  chickens: number
-  feed: number
+  id: string;
+  month: string;
+  chickens: number;
+  feed: number;
 }
 
 export default function History() {
-  const [monthlyData, setMonthlyData] = useState<MonthData[]>([])
-  const [editingData, setEditingData] = useState<MonthData | null>(null)
-  const [chickens, setChickens] = useState("")
-  const [feed, setFeed] = useState("")
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const { toast } = useToast()
+  const [monthlyData, setMonthlyData] = useState<MonthData[]>([]);
+  const [editingData, setEditingData] = useState<MonthData | null>(null);
+  const [chickens, setChickens] = useState("");
+  const [feed, setFeed] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Load data from localStorage
-    const storedData = localStorage.getItem("chickenData")
+    const storedData = localStorage.getItem("chickenData");
     if (storedData) {
-      setMonthlyData(JSON.parse(storedData))
+      setMonthlyData(JSON.parse(storedData));
     }
-  }, [])
+  }, []);
 
   const calculateFeedNeeded = (chickens: number) => {
     // Assuming each chicken needs 3kg of feed per month
-    return chickens * 3
-  }
+    return chickens * 3;
+  };
 
   const calculateFeedStatus = (data: MonthData) => {
-    const feedNeeded = calculateFeedNeeded(data.chickens)
-    const difference = data.feed - feedNeeded
+    const feedNeeded = calculateFeedNeeded(data.chickens);
+    const difference = data.feed - feedNeeded;
 
     return {
       needMore: difference < 0,
       amount: Math.abs(difference),
-    }
-  }
+    };
+  };
 
   const handleEdit = (data: MonthData) => {
-    setEditingData(data)
-    setChickens(data.chickens.toString())
-    setFeed(data.feed.toString())
-    setDialogOpen(true)
-  }
+    setEditingData(data);
+    setChickens(data.chickens.toString());
+    setFeed(data.feed.toString());
+    setDialogOpen(true);
+  };
 
   const handleSave = () => {
-    if (!editingData || !chickens || !feed) return
+    if (!editingData || !chickens || !feed) return;
 
     const updatedData = {
       ...editingData,
       chickens: Number.parseInt(chickens),
       feed: Number.parseInt(feed),
-    }
+    };
 
     // Update data in state
-    const newData = monthlyData.map((item) => (item.id === updatedData.id ? updatedData : item))
+    const newData = monthlyData.map((item) =>
+      item.id === updatedData.id ? updatedData : item
+    );
 
-    setMonthlyData(newData)
+    setMonthlyData(newData);
 
     // Save to localStorage
-    localStorage.setItem("chickenData", JSON.stringify(newData))
+    localStorage.setItem("chickenData", JSON.stringify(newData));
 
-    setDialogOpen(false)
+    setDialogOpen(false);
     toast({
       title: "Success",
       description: "Data updated successfully",
-    })
-  }
+    });
+  };
 
   // Animation variants
   const containerVariants = {
@@ -88,15 +95,20 @@ export default function History() {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 },
-  }
+  };
 
   return (
-    <motion.div className="p-4 pt-8" variants={containerVariants} initial="hidden" animate="show">
+    <motion.div
+      className="p-4 pt-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
       <motion.div variants={itemVariants} className="mb-6">
         <h1 className="text-2xl font-bold text-orange-800">History</h1>
         <p className="text-orange-600">View and edit your past reports</p>
@@ -109,7 +121,7 @@ export default function History() {
           </motion.div>
         ) : (
           monthlyData.map((data, index) => {
-            const feedStatus = calculateFeedStatus(data)
+            const feedStatus = calculateFeedStatus(data);
 
             return (
               <motion.div key={data.id} variants={itemVariants}>
@@ -117,9 +129,18 @@ export default function History() {
                   <div className="flex justify-between items-center mb-3">
                     <div className="flex items-center">
                       <Calendar className="w-4 h-4 text-orange-800 mr-2" />
-                      <h3 className="font-semibold text-orange-800">{data.month}</h3>
+                      <h3 className="font-semibold text-orange-800">
+                        {new Date(data.month).toLocaleString("en-US", {
+                          month: "long",
+                        })}
+                      </h3>
                     </div>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(data)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => handleEdit(data)}
+                    >
                       <Edit2 className="h-4 w-4 text-orange-600" />
                     </Button>
                   </div>
@@ -129,14 +150,18 @@ export default function History() {
                       <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center mr-2">
                         <Egg className="w-4 h-4 text-orange-800" />
                       </div>
-                      <span className="text-orange-700">{data.chickens} chickens</span>
+                      <span className="text-orange-700">
+                        {data.chickens} chickens
+                      </span>
                     </div>
 
                     <div className="flex items-center">
                       <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center mr-2">
                         <Package className="w-4 h-4 text-orange-800" />
                       </div>
-                      <span className="text-orange-700">{data.feed}kg feed</span>
+                      <span className="text-orange-700">
+                        {data.feed}kg feed
+                      </span>
                     </div>
                   </div>
 
@@ -149,7 +174,7 @@ export default function History() {
                   </div>
                 </Card>
               </motion.div>
-            )
+            );
           })
         )}
       </motion.div>
@@ -188,13 +213,15 @@ export default function History() {
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
               Cancel
             </Button>
-            <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={handleSave}>
+            <Button
+              className="bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={handleSave}
+            >
               Save Changes
             </Button>
           </div>
         </DialogContent>
       </Dialog>
     </motion.div>
-  )
+  );
 }
-
