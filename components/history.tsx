@@ -120,7 +120,7 @@ export default function History() {
             <p className="text-orange-600">No history available</p>
           </motion.div>
         ) : (
-          monthlyData.map((data, index) => {
+          monthlyData.reverse().map((data, index) => {
             const feedStatus = calculateFeedStatus(data);
 
             return (
