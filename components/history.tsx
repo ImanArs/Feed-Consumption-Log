@@ -130,9 +130,7 @@ export default function History() {
                     <div className="flex items-center">
                       <Calendar className="w-4 h-4 text-orange-800 mr-2" />
                       <h3 className="font-semibold text-orange-800">
-                        {new Date(data.month).toLocaleString("en-US", {
-                          month: "long",
-                        })}
+                        {data.month}
                       </h3>
                     </div>
                     <Button
